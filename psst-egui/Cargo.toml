@@ -1,0 +1,26 @@
+[package]
+name = "psst-egui"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+open = "5.3.2"
+# reusa la lógica ya escrita para la TUI (sesión de librería, playback,
+# MPRIS, búsqueda, lyrics, descarga de carátula) — ninguna de esas depende
+# de ratatui, así que sirve tal cual acá.
+psst-backend = { path = "../psst-backend" }
+psst-core = { path = "../psst-core" }
+librespot-core = "=0.7.1"
+tokio = { version = "1", features = ["rt-multi-thread"] }
+env_logger = "0.11"
+
+eframe = "0.29"
+egui_extras = { version = "0.29", features = ["all_loaders"] }
+# lectura de la paleta de DMS (dms-colors.json) en theme.rs — ya está en
+# el workspace por psst-backend, no suma nada a compilar.
+serde_json = "1"
+image = { version = "0.25", default-features = false, features = ["jpeg", "png"] }
+
+# instancia única (flock) — ya está en el árbol de deps transitivo, no
+# suma nada al binario que no estuviera ya.
+libc = "0.2"

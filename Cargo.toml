@@ -1,0 +1,28 @@
+[workspace]
+resolver = "2"
+members = ["psst-core", "psst-cli", "psst-gui", "psst-backend", "psst-egui"]
+
+[profile.dev]
+opt-level = 1
+debug = true
+lto = false
+
+[profile.release]
+opt-level = 3
+strip = true
+lto = true
+codegen-units = 1
+
+[profile.dev.package.symphonia]
+opt-level = 2
+
+[profile.dev.package.libsamplerate]
+opt-level = 2
+
+# librespot-core 0.7.1/0.8.0 estan rotos en crates.io ahora mismo (build-dep
+# vergen-gitcl = "1.0" resuelve a una version con un bug real de dependencias
+# encontradas -> no compila). Parche: copia local en psst-backend/vendor con
+# vergen-gitcl bajado a "9.1.0" (la version sincronizada real).
+[patch.crates-io]
+librespot-core = { path = "psst-backend/vendor/librespot-core" }
+vergen-gitcl = { path = "psst-backend/vendor/vergen-gitcl" }

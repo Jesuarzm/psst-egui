@@ -1,0 +1,32 @@
+# Local PKGBUILD: builds the checkout this file lives in (no source download).
+#   git clone <repo> && cd psst-fork/packaging/arch && makepkg -si
+pkgname=psst-egui
+pkgver=0.1.0
+pkgrel=6
+pkgdesc='Lightweight native Spotify client (egui) built on psst-core'
+arch=('x86_64')
+url='https://github.com/Jesuarzm/psst-egui'
+license=('MIT')
+depends=('alsa-lib' 'dbus' 'openssl' 'zlib' 'zstd' 'brotli' 'wayland' 'libxkbcommon' 'mesa' 'xdg-utils' 'libpulse')
+optdepends=('noto-fonts-cjk: CJK lyrics')
+makedepends=('rust' 'cargo')
+source=('psst-egui.desktop' 'psst-egui-icon.png')
+sha256sums=('SKIP' 'SKIP')
+
+_root() { (cd "$startdir/../.." && pwd); }
+
+build() {
+    cd "$(_root)"
+    # aggressive distro CFLAGS (e.g. CachyOS -march=native) break the
+    # assembler step of `ring`; cargo doesn't need them
+    unset CFLAGS CXXFLAGS
+    cargo build --release --locked -p psst-egui
+}
+
+package() {
+    cd "$(_root)"
+    install -Dm755 target/release/psst-egui "$pkgdir/usr/bin/psst-egui"
+    install -Dm644 "$srcdir/psst-egui-icon.png" "$pkgdir/usr/share/icons/hicolor/256x256/apps/psst-egui.png"
+    install -Dm644 "$srcdir/psst-egui.desktop" "$pkgdir/usr/share/applications/psst-egui.desktop"
+    install -Dm644 LICENSE.md "$pkgdir/usr/share/licenses/$pkgname/LICENSE.md"
+}

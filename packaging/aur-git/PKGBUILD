@@ -1,0 +1,54 @@
+# Maintainer: Jesuar Miranda <jesuarzambrano@gmail.com>
+# VCS package: always builds the latest commit on GitHub, not a checkout on
+# disk — this is the file meant to eventually go up on the AUR as
+# psst-egui-git. There's also packaging/arch/PKGBUILD, which builds
+# whatever local clone it's sitting in; use that one for quick local
+# rebuilds while developing.
+pkgname=psst-egui-git
+pkgver=0.1.0.r0.g0000000
+pkgrel=1
+pkgdesc='Lightweight native Spotify client (egui fork) built on psst-core (git version)'
+arch=('x86_64')
+url='https://github.com/Jesuarzm/psst-egui'
+license=('MIT')
+depends=('alsa-lib' 'dbus' 'openssl' 'zlib' 'zstd' 'brotli' 'wayland' 'libxkbcommon' 'mesa' 'xdg-utils' 'libpulse')
+optdepends=('noto-fonts-cjk: CJK lyrics')
+makedepends=('rust' 'cargo' 'git')
+provides=('psst-egui')
+conflicts=('psst-egui')
+source=("$pkgname::git+https://github.com/Jesuarzm/psst-egui.git")
+sha256sums=('SKIP')
+
+pkgver() {
+    cd "$pkgname"
+    # `git describe | sed ...` always "succeeds" (sed exits 0 on empty
+    # input), so a `||` after the pipe never catches a tagless repo — check
+    # git's own exit status instead of the pipeline's.
+    local described
+    if described=$(git describe --long --tags 2>/dev/null); then
+        echo "$described" | sed 's/\([^-]*-\)*g/r\1/;s/-/./g'
+    else
+        printf "0.1.0.r%s.g%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+    fi
+}
+
+prepare() {
+    cd "$pkgname"
+    cargo fetch --locked --target "$CARCH-unknown-linux-gnu"
+}
+
+build() {
+    cd "$pkgname"
+    # aggressive distro CFLAGS (e.g. CachyOS -march=native) break the
+    # assembler step of `ring`; cargo doesn't need them
+    unset CFLAGS CXXFLAGS
+    cargo build --release --frozen -p psst-egui
+}
+
+package() {
+    cd "$pkgname"
+    install -Dm755 "target/release/psst-egui" "$pkgdir/usr/bin/psst-egui"
+    install -Dm644 "LICENSE.md" "$pkgdir/usr/share/licenses/$pkgname/LICENSE.md"
+    install -Dm644 "packaging/arch/psst-egui.desktop" "$pkgdir/usr/share/applications/psst-egui.desktop"
+    install -Dm644 "packaging/arch/psst-egui-icon.png" "$pkgdir/usr/share/icons/hicolor/256x256/apps/psst-egui.png"
+}

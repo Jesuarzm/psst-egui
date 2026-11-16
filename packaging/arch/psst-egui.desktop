@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Psst (egui)
+Comment=Cliente liviano de Spotify con tema de noctalia
+GenericName=Music Player
+Icon=psst-egui
+TryExec=psst-egui
+Exec=psst-egui
+Terminal=false
+Categories=Audio;Music;Player;AudioVideo;
+StartupWMClass=psst-egui
