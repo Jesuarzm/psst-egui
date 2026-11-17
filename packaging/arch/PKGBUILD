@@ -1,8 +1,8 @@
 # Local PKGBUILD: builds the checkout this file lives in (no source download).
 #   git clone <repo> && cd psst-fork/packaging/arch && makepkg -si
 pkgname=psst-egui
-pkgver=0.1.0
-pkgrel=6
+pkgver=0.2.0
+pkgrel=1
 pkgdesc='Lightweight native Spotify client (egui) built on psst-core'
 arch=('x86_64')
 url='https://github.com/Jesuarzm/psst-egui'
